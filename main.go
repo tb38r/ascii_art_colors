@@ -104,4 +104,130 @@ func Newline(p string, y map[int][]string) {
 
 		}
 	}
+
+	a := findN1(slice)
+	b := findN2(slice)
+
+	if strings.Contains(slice, ":") {
+		for j := 0; j < len(y[32]); j++ {
+			for i := 0; i < len(n); i++ {
+				if i >= a && i <= b {
+					fmt.Print(cash[findC(slice)], y[int(n[i])][j])
+					// fmt.Print(cash[findC(slice)], y[int(n[i+1])][j])
+					// i++
+					fmt.Print(cash["clear"])
+
+					// } else if i == findN(slice) && n[i] != 32 {
+					// 	fmt.Print(cash[findC(slice)], y[int(n[i])][j])
+					// 	fmt.Print(cash["clear"])
+				} else {
+					fmt.Print(cash[slice], y[int(n[i])][j])
+					fmt.Print(cash["clear"])
+
+				}
+			}
+			fmt.Println()
+
+		}
+	}
+}
+
+// findColon() searches for colon(:) within the outer slice of the second argument
+func findColon(r []rune) bool {
+	for _, v := range r {
+		if v == ':' {
+			return true
+		}
+	}
+	return false
+}
+
+// TrimAtoi() parses number needed to locate values to be colorised
+func TrimAtoi(s string) int {
+	neg := false       // intialise neg as false
+	slice := []rune(s) // slice string into a rune to manipulate it
+	trim := 0          // initialise trim as 0
+	for i := 0; i < len(slice); i++ {
+
+		if !neg && trim == 0 && slice[i] == '-' {
+			neg = true
+		}
+		if slice[i] >= '0' && slice[i] <= '9' {
+			trim *= 10
+			trim += int(slice[i] - 48)
+		}
+	}
+	if neg {
+		return trim * -1
+	}
+	return trim
+}
+
+// findN() returns index where only one value is required to be colorised
+func findN(s string) int {
+	args2 := os.Args[2]
+	slice := args2[8:]
+	runeslice := []rune(slice)
+
+	for i := 0; i < len(runeslice); i++ {
+		if runeslice[i] == '[' && !findColon(runeslice[i:]) {
+			return TrimAtoi(string(runeslice[i:]))
+		}
+	}
+	return 100
+}
+
+// findN1() finds first int value where range of slice is required
+func findN1(s string) int {
+	args2 := os.Args[2]
+	slice := args2[8:]
+	runeslice := []rune(slice)
+	n1 := 0
+
+	for i := 0; i < len(runeslice); i++ {
+		if runeslice[i] == '[' && findColon(runeslice[i:]) {
+			if TrimAtoi(string(runeslice[i:])) < 100 {
+				n1 = TrimAtoi(string(runeslice[i:])) / 10
+			} else {
+				a := strconv.Itoa(TrimAtoi(string(runeslice[i:])))
+				n1 = TrimAtoi(a[:1])
+
+			}
+		}
+	}
+	return n1
+}
+
+// findN2() finds second int value where range of slice is required
+func findN2(s string) int {
+	args2 := os.Args[2]
+	slice := args2[8:]
+	runeslice := []rune(slice)
+	n2 := 0
+
+	for i := 0; i < len(runeslice); i++ {
+		if runeslice[i] == '[' && findColon(runeslice[i:]) {
+			if TrimAtoi(string(runeslice[i:])) < 100 {
+				n2 = TrimAtoi(string(runeslice[i:])) % 10
+			} else {
+				a := strconv.Itoa(TrimAtoi(string(runeslice[i:])))
+				n2 = TrimAtoi(a[1:])
+			}
+		}
+	}
+	return n2
+}
+
+// findC() returns required color needed to be applied
+func findC(s string) string {
+	args2 := os.Args[2]
+	slice := args2[8:]
+	runeslice := []rune(slice)
+
+	for i := 0; i < len(runeslice); i++ {
+		if runeslice[i] == '[' {
+			return string(runeslice[:i])
+		}
+	}
+	return string(runeslice)
 }
